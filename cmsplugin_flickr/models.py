@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -37,7 +38,9 @@ SIZE_CHOICES = (('s', _('Small Square 75px x 75px')),
                 ('o', _('Original image, either a jpg, gif or png')))
 
 
-class Flickr(CMSPlugin): 
+class Flickr(CMSPlugin):
+    CACHE_KEY = 'cmsplugin-flickr-pk-%d'
+
     title = models.CharField(max_length=100)
     show_title = models.BooleanField(default=True)
     count = models.PositiveIntegerField(default=10,
@@ -60,10 +63,16 @@ class Flickr(CMSPlugin):
                              default=RELEVANCE,
                              max_length=50)
 
+    def cache_key(self):
+        return self.CACHE_KEY % self.pk
 
     class Meta:
         verbose_name=_('Flickr CMS Plugin')
         
     def __unicode__(self):
         return self.title
-    
+
+def clear_cache(sender, instance, **kwargs):
+    cache.delete(instance.cache_key())
+
+models.signals.post_save.connect(clear_cache, Flickr)

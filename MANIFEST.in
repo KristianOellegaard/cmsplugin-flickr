@@ -1,0 +1,2 @@
+recursive-include cmsplugin_flickr/templates *
+include README.txt

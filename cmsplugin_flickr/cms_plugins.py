@@ -47,6 +47,8 @@ class FlickrPlugin(CMSPluginBase):
                     p.attrib['size'] = instance.size
                     if not instance.user_name:
                         id = instance.group_id
+                    else:
+                        id = None
                     id = id or p.attrib['id']
                     uid = user_id or p.attrib['owner']
                     items.append({'title': p.attrib['title'],
